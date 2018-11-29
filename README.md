@@ -1,4 +1,4 @@
-![alt text](https://www.dropbox.com/s/9ik42aaief3qlmb/logo%404x.png)
+![alt text](https://raw.githubusercontent.com/chrometaphore/custom-export/master/32b4e7d2e0b1992e09f8fc5cca71da25.png)
 
 # Adobe XD Custom export
 Adobe XD Plugin to export selected Layers and Artboards to any custom scale.
