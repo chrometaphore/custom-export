@@ -1,0 +1,43 @@
+/* container */
+#custom-exporter {
+    width: 200px;
+}
+
+#custom-exporter .logoArea {
+    width:100%;
+    height:120px;
+}
+#custom-exporter .logo {
+    width:150px;
+    height:120px;
+    margin:0 auto;
+    background-image: url("./logo.png");
+    background-size:cover;
+}
+
+#custom-exporter .title {
+    padding:20px 0 0 0;
+    text-align:center;
+}
+
+#custom-exporter .title h1 {
+    color:#111111;
+}
+#custom-exporter .title p {
+    color:#999999;
+    font-size:13px;
+}
+
+
+/* contains UI controls */
+#custom-exporter .controls {
+    padding:10px 0 5px 0;
+}
+#custom-exporter .controls label {
+    padding:5px;
+}
+
+/* buttons area */
+footer {
+    margin:0 auto;
+}
