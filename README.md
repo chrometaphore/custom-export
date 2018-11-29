@@ -1,3 +1,5 @@
+<div style="text-align:center"><img width="200" height="160" src="https://www.dropbox.com/s/9ik42aaief3qlmb/logo%404x.png" /></div>
+
 # Adobe XD Custom export
 Adobe XD Plugin to export selected Layers and Artboards to any custom scale.
 
