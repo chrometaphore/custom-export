@@ -1,4 +1,4 @@
-<img align="center" width="200" height="160" src="https://raw.githubusercontent.com/chrometaphore/custom-export/master/32b4e7d2e0b1992e09f8fc5cca71da25.png" alt="Custom Export" />
+<img width="300" height="240" src="https://raw.githubusercontent.com/chrometaphore/custom-export/master/32b4e7d2e0b1992e09f8fc5cca71da25.png" alt="Custom Export" />
 
 # Adobe XD Custom export
 Adobe XD Plugin to export selected Layers and Artboards to any custom scale.
