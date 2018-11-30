@@ -3,7 +3,7 @@ const fs          = require("uxp").storage.localFileSystem;
 
 module.exports = async function exportAssets( selection, root, scale, format )
 {
-    scale  = scale.replace(/\D/g,'');
+    scale  = scale.replace(/[^\d.-]/g, '');
     scale  = Number(scale);
 
     if ( format == undefined )
