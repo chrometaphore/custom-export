@@ -20,7 +20,7 @@ const React = require("react");
 const ReactDOM = require("react-dom");
 const exportAssets = require("./exportAssets");
 
-class HelloForm extends React.Component {
+class UI extends React.Component {
     constructor(props) {
         super(props);
 
@@ -83,17 +83,17 @@ class HelloForm extends React.Component {
         return (
             <form id="custom-exporter">
 
-                <div class="header">
-                    <div class="logoArea">
-                        <div class="logo"></div>
+                <div className="header">
+                    <div className="logoArea">
+                        <div className="logo"></div>
                     </div>
-                    <div class="title">
+                    <div className="title">
                         <h1>Custom Export</h1>
                         <p>Export selected layers and artboards to any scale.</p>
                     </div>
                 </div>
 
-                <div class="controls">
+                <div className="controls">
                     <label>
                         <span>Scale</span>
                         <input value={this.state.scale} onChange={this.onInputScaleChange} />
@@ -125,11 +125,11 @@ let dialog;
 function getDialog(selection,root) {
     if (dialog == null) {
         dialog = document.createElement("dialog");
-        ReactDOM.render(<HelloForm dialog={dialog} selection={selection} root={root}/>, dialog);
+        ReactDOM.render(<UI dialog={dialog} selection={selection} root={root}/>, dialog);
     }
     else {
       //re-rendering..
-      ReactDOM.render(<HelloForm dialog={dialog} selection={selection} root={root}/>, dialog);
+      ReactDOM.render(<UI dialog={dialog} selection={selection} root={root}/>, dialog);
     }
     return dialog
 }
