@@ -30,7 +30,8 @@ class UI extends React.Component {
         this.mySelect = React.createRef();
 
         this.state = { scale: props.scale || "1x",
-                       format: props.format || "png"
+                       format: props.format || "png",
+                       notScalableFormat: false, //this controls UI input on/off
         };
 
         this.onInputScaleChange = (e) => {
@@ -38,7 +39,24 @@ class UI extends React.Component {
         }
 
         this.onSelectFormatChange = (e) => {
-            this.setState({ format: this.mySelect.current.value })
+            var isFormatNotScalable;
+            switch( this.mySelect.current.value )
+            {
+                case "png":
+                    isFormatNotScalable = false;
+                break;
+                case "jpg":
+                    isFormatNotScalable = false;
+                break;
+                case "svg":
+                    isFormatNotScalable = true;
+                break;
+                case "pdf":
+                    isFormatNotScalable = true;
+                break;
+            }
+            this.setState( { format: this.mySelect.current.value,
+                             notScalableFormat: isFormatNotScalable })
         }
 
         this.onExportClick = (e) => {
@@ -57,9 +75,9 @@ class UI extends React.Component {
 
         this.export = async() => {
           console.log('exporting..');
-          console.log('items: ' + this.props.selection.items.length);
-          console.log('scale: ' + this.state.scale);
-          console.log('format: ' + this.state.format);
+          //console.log('items: ' + this.props.selection.items.length);
+          //console.log('scale: ' + this.state.scale);
+          //console.log('format: ' + this.state.format);
 
           var exp = await exportAssets( this.props.selection,
                                         this.props.root,
@@ -96,7 +114,7 @@ class UI extends React.Component {
                 <div className="controls">
                     <label>
                         <span>Scale</span>
-                        <input value={this.state.scale} onChange={this.onInputScaleChange} />
+                        <input value={this.state.scale} disabled={this.state.notScalableFormat} onChange={this.onInputScaleChange} />
                     </label>
 
                     <label>
@@ -105,6 +123,8 @@ class UI extends React.Component {
                                 value={this.state.format}
                                 onChange={this.onSelectFormatChange}>
                             <option value="png">png</option>
+                            <option value="jpg">jpg</option>
+                            <option value="svg">svg</option>
                             <option value="pdf">pdf</option>
                         </select>
                     </label>

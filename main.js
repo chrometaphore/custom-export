@@ -23738,16 +23738,64 @@ const application = __webpack_require__(/*! application */ "application");
 const fs = __webpack_require__(/*! uxp */ "uxp").storage.localFileSystem;
 
 module.exports = async function exportAssets(selection, root, scale, format) {
-    scale = scale.replace(/\D/g, '');
+    //you need an actual selection
+    if (selection.items.length <= 0) {
+        return;
+    }
+
+    scale = scale.replace(/[^\d.-]/g, '');
     scale = Number(scale);
 
     if (format == undefined) {
         format = "png";
     }
 
-    //you need an actual selection
-    if (selection.items.length <= 0) {
-        return;
+    var exportSettings = {};
+
+    switch (format) {
+        case "png":
+            //PNG settings
+            exportSettings.type = application.RenditionType.PNG;
+            exportSettings.quality = null;
+            exportSettings.scale = scale;
+            exportSettings.minify = null;
+            exportSettings.embedImages = null;
+            break;
+
+        case "jpg":
+            //JPG settings
+            exportSettings.type = application.RenditionType.JPG;
+            exportSettings.quality = 100;
+            exportSettings.scale = scale;
+            exportSettings.minify = null;
+            exportSettings.embedImages = null;
+            break;
+
+        case "svg":
+            //SVG settings
+            exportSettings.type = application.RenditionType.SVG;
+            exportSettings.scale = null;
+            exportSettings.quality = null;
+            exportSettings.minify = true;
+            exportSettings.embedImages = true;
+            break;
+
+        case "pdf":
+            //PDF settings
+            exportSettings.type = application.RenditionType.PDF;
+            exportSettings.scale = null;
+            exportSettings.quality = null;
+            exportSettings.minify = null;
+            exportSettings.embedImages = null;
+            break;
+
+        default:
+            //PNG settings
+            exportSettings.type = application.RenditionType.PNG;
+            exportSettings.quality = null;
+            exportSettings.scale = scale;
+            exportSettings.minify = null;
+            exportSettings.embedImages = null;
     }
 
     //set up file I/O
@@ -23755,7 +23803,7 @@ module.exports = async function exportAssets(selection, root, scale, format) {
 
     const files = [];
     for (var i = 0; i < selection.items.length; i++) {
-        const file = await folder.createFile(selection.items[i].name + "." + format);
+        const file = await folder.createFile(selection.items[i].name + "." + format, { overwrite: true });
         files.push(file);
     }
 
@@ -23765,8 +23813,11 @@ module.exports = async function exportAssets(selection, root, scale, format) {
         renditions.push({
             node: selection.items[k],
             outputFile: files[k],
-            type: format,
-            scale: scale
+            type: exportSettings.type,
+            scale: exportSettings.scale,
+            quality: exportSettings.quality,
+            minify: exportSettings.minify,
+            embedImages: exportSettings.embedImages
         });
     }
 
@@ -23775,8 +23826,8 @@ module.exports = async function exportAssets(selection, root, scale, format) {
     return application.createRenditions(renditions).then(results => {
         return true;
     }).catch(error => {
-        return false;
         //console.log(error);
+        return false;
     });
 };
 
@@ -23822,7 +23873,7 @@ const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ReactDOM = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 const exportAssets = __webpack_require__(/*! ./exportAssets */ "./src/exportAssets.js");
 
-class HelloForm extends React.Component {
+class UI extends React.Component {
     constructor(props) {
         super(props);
 
@@ -23832,7 +23883,8 @@ class HelloForm extends React.Component {
         this.mySelect = React.createRef();
 
         this.state = { scale: props.scale || "1x",
-            format: props.format || "png"
+            format: props.format || "png",
+            notScalableFormat: false //this controls UI input on/off
         };
 
         this.onInputScaleChange = e => {
@@ -23840,7 +23892,23 @@ class HelloForm extends React.Component {
         };
 
         this.onSelectFormatChange = e => {
-            this.setState({ format: this.mySelect.current.value });
+            var isFormatNotScalable;
+            switch (this.mySelect.current.value) {
+                case "png":
+                    isFormatNotScalable = false;
+                    break;
+                case "jpg":
+                    isFormatNotScalable = false;
+                    break;
+                case "svg":
+                    isFormatNotScalable = true;
+                    break;
+                case "pdf":
+                    isFormatNotScalable = true;
+                    break;
+            }
+            this.setState({ format: this.mySelect.current.value,
+                notScalableFormat: isFormatNotScalable });
         };
 
         this.onExportClick = e => {
@@ -23859,9 +23927,9 @@ class HelloForm extends React.Component {
 
         this.export = async () => {
             console.log('exporting..');
-            console.log('items: ' + this.props.selection.items.length);
-            console.log('scale: ' + this.state.scale);
-            console.log('format: ' + this.state.format);
+            //console.log('items: ' + this.props.selection.items.length);
+            //console.log('scale: ' + this.state.scale);
+            //console.log('format: ' + this.state.format);
 
             var exp = await exportAssets(this.props.selection, this.props.root, this.state.scale, this.state.format); //true | false
 
@@ -23884,15 +23952,15 @@ class HelloForm extends React.Component {
             { id: "custom-exporter" },
             React.createElement(
                 "div",
-                { "class": "header" },
+                { className: "header" },
                 React.createElement(
                     "div",
-                    { "class": "logoArea" },
-                    React.createElement("div", { "class": "logo" })
+                    { className: "logoArea" },
+                    React.createElement("div", { className: "logo" })
                 ),
                 React.createElement(
                     "div",
-                    { "class": "title" },
+                    { className: "title" },
                     React.createElement(
                         "h1",
                         null,
@@ -23907,7 +23975,7 @@ class HelloForm extends React.Component {
             ),
             React.createElement(
                 "div",
-                { "class": "controls" },
+                { className: "controls" },
                 React.createElement(
                     "label",
                     null,
@@ -23916,7 +23984,7 @@ class HelloForm extends React.Component {
                         null,
                         "Scale"
                     ),
-                    React.createElement("input", { value: this.state.scale, onChange: this.onInputScaleChange })
+                    React.createElement("input", { value: this.state.scale, disabled: this.state.notScalableFormat, onChange: this.onInputScaleChange })
                 ),
                 React.createElement(
                     "label",
@@ -23935,6 +24003,16 @@ class HelloForm extends React.Component {
                             "option",
                             { value: "png" },
                             "png"
+                        ),
+                        React.createElement(
+                            "option",
+                            { value: "jpg" },
+                            "jpg"
+                        ),
+                        React.createElement(
+                            "option",
+                            { value: "svg" },
+                            "svg"
                         ),
                         React.createElement(
                             "option",
@@ -23968,10 +24046,10 @@ let dialog;
 function getDialog(selection, root) {
     if (dialog == null) {
         dialog = document.createElement("dialog");
-        ReactDOM.render(React.createElement(HelloForm, { dialog: dialog, selection: selection, root: root }), dialog);
+        ReactDOM.render(React.createElement(UI, { dialog: dialog, selection: selection, root: root }), dialog);
     } else {
         //re-rendering..
-        ReactDOM.render(React.createElement(HelloForm, { dialog: dialog, selection: selection, root: root }), dialog);
+        ReactDOM.render(React.createElement(UI, { dialog: dialog, selection: selection, root: root }), dialog);
     }
     return dialog;
 }

@@ -3,6 +3,11 @@ const fs          = require("uxp").storage.localFileSystem;
 
 module.exports = async function exportAssets( selection, root, scale, format )
 {
+    //you need an actual selection
+    if (selection.items.length <= 0) {
+        return;
+    }
+
     scale  = scale.replace(/[^\d.-]/g, '');
     scale  = Number(scale);
 
@@ -11,9 +16,53 @@ module.exports = async function exportAssets( selection, root, scale, format )
         format = "png";
     }
 
-    //you need an actual selection
-    if (selection.items.length <= 0) {
-        return;
+    var exportSettings = {};
+
+    switch( format )
+    {
+        case "png":
+            //PNG settings
+            exportSettings.type        = application.RenditionType.PNG;
+            exportSettings.quality     = null;
+            exportSettings.scale       = scale;
+            exportSettings.minify      = null;
+            exportSettings.embedImages = null;
+        break;
+
+        case "jpg":
+            //JPG settings
+            exportSettings.type        = application.RenditionType.JPG;
+            exportSettings.quality     = 100;
+            exportSettings.scale       = scale;
+            exportSettings.minify      = null;
+            exportSettings.embedImages = null;
+        break;
+
+        case "svg":
+            //SVG settings
+            exportSettings.type        = application.RenditionType.SVG;
+            exportSettings.scale       = null;
+            exportSettings.quality      = null;
+            exportSettings.minify      = true;
+            exportSettings.embedImages = true;
+        break
+
+        case "pdf":
+            //PDF settings
+            exportSettings.type        = application.RenditionType.PDF;
+            exportSettings.scale       = null;
+            exportSettings.quality     = null;
+            exportSettings.minify      = null;
+            exportSettings.embedImages = null;
+        break;
+
+        default :
+            //PNG settings
+            exportSettings.type        = application.RenditionType.PNG;
+            exportSettings.quality     = null;
+            exportSettings.scale       = scale;
+            exportSettings.minify      = null;
+            exportSettings.embedImages = null;
     }
 
     //set up file I/O
@@ -22,7 +71,7 @@ module.exports = async function exportAssets( selection, root, scale, format )
     const files = [];
     for ( var i = 0; i<selection.items.length; i++ )
     {
-        const file = await folder.createFile((selection.items[i].name + "." + format));
+        const file = await folder.createFile((selection.items[i].name + "." + format), {overwrite:true} );
         files.push(file);
     }
 
@@ -33,8 +82,11 @@ module.exports = async function exportAssets( selection, root, scale, format )
         renditions.push({
             node: selection.items[k],
             outputFile: files[k],
-            type: format,
-            scale: scale
+            type: exportSettings.type,
+            scale: exportSettings.scale,
+            quality: exportSettings.quality,
+            minify: exportSettings.minify,
+            embedImages: exportSettings.embedImages,
         });
     }
 
@@ -45,7 +97,7 @@ module.exports = async function exportAssets( selection, root, scale, format )
             return true;
         })
         .catch(error => {
-            return false;
             //console.log(error);
+            return false;
         })
 }
