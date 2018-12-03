@@ -23738,6 +23738,8 @@ const application = __webpack_require__(/*! application */ "application");
 const fs = __webpack_require__(/*! uxp */ "uxp").storage.localFileSystem;
 
 module.exports = async function exportAssets(selection, root, scale, format) {
+    console.log('selection:');
+    console.log(selection.items);
     //you need an actual selection
     if (selection.items.length <= 0) {
         return;
@@ -23798,12 +23800,14 @@ module.exports = async function exportAssets(selection, root, scale, format) {
             exportSettings.embedImages = null;
     }
 
+    console.log(exportSettings);
+
     //set up file I/O
     const folder = await fs.getFolder();
 
     const files = [];
     for (var i = 0; i < selection.items.length; i++) {
-        const file = await folder.createFile(selection.items[i].name + "." + format, { overwrite: true });
+        const file = await folder.createFile(selection.items[i].name.replace(/[^a-z0-9]/gi, '_').toLowerCase() + "." + format, { overwrite: true });
         files.push(file);
     }
 
